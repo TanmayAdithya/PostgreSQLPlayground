@@ -42,9 +42,14 @@ app.post('/add', async (req, res) => {
     [country]
   );
 
-  db.query(`INSERT INTO visited_countries (country) VALUES ($1)`, [code]);
-  res.render('index.ejs', { countries: countries, total: countries.length });
-  db.end();
+  if (code.rows.length !== 0) {
+    const data = code.rows[0];
+    const countryCode = data.country_code;
+    await db.query(`INSERT INTO visited_countries (country) VALUES ($1)`, [
+      countryCode,
+    ]);
+    res.redirect('/');
+  }
 });
 
 app.listen(port, () => {
